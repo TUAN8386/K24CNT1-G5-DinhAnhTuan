@@ -1,0 +1,70 @@
+@model GioHangVM
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<h1 class="h4 mb-3"><i class="bi bi-bag"></i> Giỏ hàng</h1>
+
+@if (!Model.Dongs.Any())
+{
+    <div class="box text-center py-5">
+        <p class="text-muted">Giỏ hàng của bạn đang trống.</p>
+        <a class="btn btn-accent" asp-controller="SanPham" asp-action="Index">Tiếp tục mua sắm</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="box p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Sản phẩm</th><th class="text-end">Đơn giá</th><th style="width:160px">Số lượng</th><th class="text-end">Thành tiền</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var d in Model.Dongs)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="@(d.AnhDaiDien ?? "/images/no-phone.svg")" alt="" width="56" height="56" style="object-fit:contain" />
+                                            <div>
+                                                <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@d.MaSP" class="fw-semibold text-decoration-none">@d.TenSP</a>
+                                                <div class="small text-muted">@d.DungLuong · @d.MauSac · còn @d.SoLuongTon</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">@d.GiaBan.ToString("N0") ₫</td>
+                                    <td>
+                                        <form asp-action="CapNhat" method="post" class="d-flex gap-1">
+                                            <input type="hidden" name="maPB" value="@d.MaPB" />
+                                            <input type="number" name="soLuong" value="@d.SoLuong" min="0" max="@d.SoLuongTon" class="form-control form-control-sm" aria-label="Số lượng" />
+                                            <button class="btn btn-sm btn-outline-secondary" type="submit" title="Cập nhật"><i class="bi bi-arrow-repeat"></i></button>
+                                        </form>
+                                    </td>
+                                    <td class="text-end fw-semibold">@d.ThanhTien.ToString("N0") ₫</td>
+                                    <td>
+                                        <form asp-action="Xoa" method="post">
+                                            <input type="hidden" name="maPB" value="@d.MaPB" />
+                                            <button class="btn btn-sm btn-link text-danger" type="submit" title="Xóa"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="box">
+                <div class="d-flex justify-content-between mb-2"><span>Tạm tính</span><strong>@Model.TongTien.ToString("N0") ₫</strong></div>
+                <div class="d-flex justify-content-between mb-3 small text-muted"><span>Phí giao hàng</span><span>Miễn phí</span></div>
+                <div class="d-flex justify-content-between fs-5 mb-3"><span>Tổng</span><span class="price">@Model.TongTien.ToString("N0") ₫</span></div>
+                <a class="btn btn-accent w-100" asp-controller="DonHang" asp-action="DatHang">Tiến hành đặt hàng</a>
+                <a class="btn btn-link w-100" asp-controller="SanPham" asp-action="Index">Mua thêm</a>
+            </div>
+        </div>
+    </div>
+}

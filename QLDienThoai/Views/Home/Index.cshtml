@@ -1,0 +1,49 @@
+@model TrangChuVM
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<section class="hero mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <h1 class="fw-bold mb-3">Điện thoại chính hãng, giá tốt mỗi ngày</h1>
+            <p class="lead mb-4">So sánh tối đa 3 máy, chọn đúng dung lượng và màu bạn thích, trả góp 0% và tra cứu bảo hành bằng IMEI.</p>
+            <a class="btn btn-accent btn-lg me-2" asp-controller="SanPham" asp-action="Index"><i class="bi bi-grid"></i> Xem tất cả</a>
+            <a class="btn btn-outline-light btn-lg" asp-controller="BaoHanh" asp-action="Index"><i class="bi bi-shield-check"></i> Tra bảo hành</a>
+        </div>
+        <div class="col-lg-5">
+            @foreach (var km in Model.KhuyenMais)
+            {
+                <a class="d-block bg-white text-dark rounded-3 p-3 mb-2 text-decoration-none" asp-controller="KhuyenMai" asp-action="ChiTiet" asp-route-id="@km.MaKM">
+                    <span class="badge bg-danger me-1">HOT</span> <strong>@km.TieuDe</strong>
+                    <div class="small text-muted">Đến @km.NgayKetThuc.ToString("dd/MM/yyyy")</div>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<div>
+    @foreach (var h in Model.Hangs)
+    {
+        <a class="brand-chip" asp-controller="SanPham" asp-action="Index" asp-route-hang="@h.MaHang">@h.TenHang</a>
+    }
+</div>
+
+@if (Model.DaXem.Any())
+{
+    <h2 class="section-title">Sản phẩm bạn đã xem</h2>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        @foreach (var sp in Model.DaXem.Take(4)) { <div class="col"><partial name="_SanPhamThe" model="sp" /></div> }
+    </div>
+}
+
+<h2 class="section-title">Bán chạy nhất</h2>
+<div class="row row-cols-2 row-cols-md-4 g-3">
+    @foreach (var sp in Model.BanChay) { <div class="col"><partial name="_SanPhamThe" model="sp" /></div> }
+</div>
+
+<h2 class="section-title">Mới về</h2>
+<div class="row row-cols-2 row-cols-md-4 g-3">
+    @foreach (var sp in Model.MoiNhat) { <div class="col"><partial name="_SanPhamThe" model="sp" /></div> }
+</div>

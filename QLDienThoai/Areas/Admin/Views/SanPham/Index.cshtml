@@ -1,0 +1,42 @@
+@model PagedResult<SanPham>
+@{
+    ViewData["Title"] = "Sản phẩm";
+}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0">Sản phẩm</h1>
+    <a asp-action="Create" class="btn btn-accent"><i class="bi bi-plus-lg"></i> Thêm sản phẩm</a>
+</div>
+<form method="get" class="row g-2 mb-3" style="max-width:640px">
+    <div class="col-sm-6"><input name="q" value="@ViewBag.Q" class="form-control" placeholder="Tìm theo tên sản phẩm" aria-label="Tìm" /></div>
+    <div class="col-sm-4">
+        <select name="hang" asp-items="ViewBag.MaHang" class="form-select" aria-label="Hãng">
+            <option value="">Tất cả hãng</option>
+        </select>
+    </div>
+    <div class="col-sm-2"><button class="btn btn-outline-secondary w-100" type="submit">Lọc</button></div>
+</form>
+<div class="table-responsive">
+    <table class="table table-hover align-middle table-admin">
+        <thead class="table-light"><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Hãng</th><th>Phiên bản</th><th class="text-end">Giá từ</th><th class="text-end">Tổng tồn</th><th class="text-end">Thao tác</th></tr></thead>
+        <tbody>
+        @foreach (var s in Model.Items)
+        {
+            <tr>
+                <td><img src="@(s.AnhDaiDien ?? "/images/no-phone.svg")" class="thumb" alt="" /></td>
+                <td class="fw-semibold">@s.TenSP<div class="small text-muted">@s.Chip</div></td>
+                <td>@s.HangSanXuat?.TenHang</td>
+                <td><a asp-controller="PhienBan" asp-action="Index" asp-route-maSP="@s.MaSP">@s.PhienBans.Count phiên bản</a></td>
+                <td class="text-end">@(s.PhienBans.Any() ? s.PhienBans.Min(p => p.GiaBan).ToString("N0") : "—")</td>
+                <td class="text-end">@s.PhienBans.Sum(p => p.SoLuongTon)</td>
+                <td class="text-end text-nowrap">
+                    <a asp-controller="PhienBan" asp-action="Create" asp-route-maSP="@s.MaSP" class="btn btn-sm btn-outline-success" title="Thêm phiên bản"><i class="bi bi-plus-square"></i></a>
+                    <a asp-action="Details" asp-route-id="@s.MaSP" class="btn btn-sm btn-outline-secondary" title="Chi tiết"><i class="bi bi-eye"></i></a>
+                    <a asp-action="Edit" asp-route-id="@s.MaSP" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="Delete" asp-route-id="@s.MaSP" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<partial name="_Pager" model="Model" />

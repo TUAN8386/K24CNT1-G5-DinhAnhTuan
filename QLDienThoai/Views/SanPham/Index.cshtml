@@ -1,0 +1,124 @@
+@model DanhSachSanPhamVM
+@{
+    ViewData["Title"] = "Điện thoại";
+    var l = Model.Loc;
+    var dangLoc = l.Hang.Any() || l.DungLuong.Any() || !string.IsNullOrEmpty(l.Gia) || l.GiaMin.HasValue || l.GiaMax.HasValue;
+}
+
+<div class="row g-4">
+    @* ================= BỘ LỌC (cột trái) ================= *@
+    <aside class="col-lg-3">
+        <form method="get" asp-action="Index" class="filter-panel" id="boLoc">
+            <h2 class="filter-title">BỘ LỌC</h2>
+            <input type="hidden" name="q" value="@l.Q" />
+            <input type="hidden" name="sapXep" value="@l.SapXep" />
+
+            <fieldset class="filter-group">
+                <legend>Hãng</legend>
+                @foreach (var h in Model.Hangs)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="hang" value="@h.MaHang" id="hang-@h.MaHang"
+                               checked="@(l.Hang.Contains(h.MaHang))" />
+                        <label class="form-check-label" for="hang-@h.MaHang">@h.TenHang</label>
+                    </div>
+                }
+            </fieldset>
+
+            <fieldset class="filter-group">
+                <legend>Khoảng giá</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gia" value="" id="gia-all"
+                           checked="@(string.IsNullOrEmpty(l.Gia))" />
+                    <label class="form-check-label" for="gia-all">Tất cả</label>
+                </div>
+                @foreach (var k in LocSanPham.CacKhoangGia)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gia" value="@k.Khoa" id="gia-@k.Khoa"
+                               checked="@(l.Gia == k.Khoa)" />
+                        <label class="form-check-label" for="gia-@k.Khoa">@k.Nhan</label>
+                    </div>
+                }
+            </fieldset>
+
+            <fieldset class="filter-group">
+                <legend>Dung lượng</legend>
+                @foreach (var d in Model.DungLuongs)
+                {
+                    var idDl = "dl-" + d.Replace(" ", "");
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dungLuong" value="@d" id="@idDl"
+                               checked="@(l.DungLuong.Contains(d))" />
+                        <label class="form-check-label" for="@idDl">@d</label>
+                    </div>
+                }
+            </fieldset>
+
+            <button class="btn btn-primary w-100" type="submit">Áp dụng</button>
+            @if (dangLoc)
+            {
+                <a class="btn btn-link btn-sm w-100 mt-1" asp-action="Index" asp-route-q="@l.Q">Xóa bộ lọc</a>
+            }
+        </form>
+    </aside>
+
+    @* ================= KẾT QUẢ (cột phải) ================= *@
+    <section class="col-lg-9">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+                Tìm thấy <strong>@Model.KetQua.TotalCount</strong> sản phẩm
+                @if (!string.IsNullOrWhiteSpace(l.Q)) { <span class="text-muted">cho "@l.Q"</span> }
+            </div>
+            <form method="get" asp-action="Index" class="sort-box">
+                <input type="hidden" name="q" value="@l.Q" />
+                @foreach (var h in l.Hang) { <input type="hidden" name="hang" value="@h" /> }
+                <input type="hidden" name="gia" value="@l.Gia" />
+                <input type="hidden" name="giaMin" value="@l.GiaMin" />
+                <input type="hidden" name="giaMax" value="@l.GiaMax" />
+                @foreach (var d in l.DungLuong) { <input type="hidden" name="dungLuong" value="@d" /> }
+                <label for="sapXep" class="visually-hidden">Sắp xếp</label>
+                <select id="sapXep" name="sapXep" class="form-select" onchange="this.form.submit()">
+                    <option value="ban-chay" selected="@(l.SapXep == "ban-chay")">Sắp xếp: Bán chạy</option>
+                    <option value="moi" selected="@(l.SapXep == "moi")">Sắp xếp: Mới nhất</option>
+                    <option value="gia-tang" selected="@(l.SapXep == "gia-tang")">Sắp xếp: Giá tăng dần</option>
+                    <option value="gia-giam" selected="@(l.SapXep == "gia-giam")">Sắp xếp: Giá giảm dần</option>
+                    <option value="ten" selected="@(l.SapXep == "ten")">Sắp xếp: Tên A–Z</option>
+                </select>
+                <noscript><button class="btn btn-outline-secondary btn-sm" type="submit">Sắp xếp</button></noscript>
+            </form>
+        </div>
+
+        @if (!Model.KetQua.Items.Any())
+        {
+            <div class="box text-center text-muted py-5">
+                <i class="bi bi-search fs-1"></i>
+                <p class="mt-2 mb-0">Không tìm thấy sản phẩm phù hợp.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                @foreach (var sp in Model.KetQua.Items) { <div class="col"><partial name="_SanPhamThe" model="sp" /></div> }
+            </div>
+            <partial name="_Pager" model="Model.KetQua" />
+        }
+
+        @* Sản phẩm đã xem – đọc từ Cookie "SanPhamDaXem" (lưu 30 ngày) *@
+        @if (Model.DaXem.Any())
+        {
+            <h2 class="h6 fw-bold mt-5 mb-3">Sản phẩm bạn đã xem</h2>
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3">
+                @foreach (var sp in Model.DaXem)
+                {
+                    <div class="col">
+                        <a class="viewed-card" asp-action="ChiTiet" asp-route-id="@sp.MaSP">
+                            <img src="@(sp.AnhDaiDien ?? "/images/no-phone.svg")" alt="@sp.TenSP" loading="lazy" />
+                            <span>@sp.TenSP</span>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+</div>

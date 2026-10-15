@@ -1,0 +1,29 @@
+@model DangNhapVM
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+<div class="box mx-auto" style="max-width:440px">
+    <h1 class="h4 mb-3 text-center">Đăng nhập</h1>
+    <form asp-action="DangNhap" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div class="mb-3">
+            <label asp-for="TenDangNhap" class="form-label"></label>
+            <input asp-for="TenDangNhap" class="form-control" autocomplete="username" autofocus />
+            <span asp-validation-for="TenDangNhap" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="MatKhau" class="form-label"></label>
+            <input asp-for="MatKhau" class="form-control" autocomplete="current-password" />
+            <span asp-validation-for="MatKhau" class="text-danger small"></span>
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="GhiNho" class="form-check-input" />
+            <label asp-for="GhiNho" class="form-check-label"></label>
+        </div>
+        <button type="submit" class="btn btn-accent w-100">Đăng nhập</button>
+    </form>
+    <p class="text-center small mt-3 mb-0">Chưa có tài khoản? <a asp-action="DangKy">Đăng ký</a></p>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

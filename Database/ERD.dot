@@ -1,0 +1,84 @@
+digraph ERD {
+  graph [rankdir=LR, splines=polyline, nodesep=0.6, ranksep=1.1, fontname="DejaVu Sans", bgcolor="white", pad=0.3,
+         label="ERD – Website bán điện thoại di động (Đề 17)", labelloc=t, fontsize=20];
+  node  [shape=plain, fontname="DejaVu Sans", fontsize=11];
+  edge  [fontname="DejaVu Sans", fontsize=10, color="#5b6b80", arrowhead=crow, arrowtail=teetee, dir=both];
+
+  HangSanXuat [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#13233a"><font color="white"><b>HangSanXuat</b></font></td></tr>
+    <tr><td align="left"><b>MaHang</b> INT</td></tr>
+    <tr><td align="left">TenHang NVARCHAR(100) UQ</td></tr>
+    <tr><td align="left">QuocGia NVARCHAR(100)</td></tr>
+    <tr><td align="left">Logo NVARCHAR(300)</td></tr></table>>];
+
+  SanPham [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#13233a"><font color="white"><b>SanPham</b></font></td></tr>
+    <tr><td align="left"><b>MaSP</b> INT</td></tr>
+    <tr><td align="left">TenSP NVARCHAR(200)</td></tr>
+    <tr><td align="left"><i>FK MaHang</i> INT</td></tr>
+    <tr><td align="left">ManHinh, Chip, Camera</td></tr>
+    <tr><td align="left">Pin, HeDieuHanh</td></tr>
+    <tr><td align="left">AnhDaiDien, MoTa (HTML)</td></tr>
+    <tr><td align="left">NgayTao DATETIME2</td></tr></table>>];
+
+  PhienBan [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#13233a"><font color="white"><b>PhienBan</b></font></td></tr>
+    <tr><td align="left"><b>MaPB</b> INT</td></tr>
+    <tr><td align="left"><i>FK MaSP</i> INT</td></tr>
+    <tr><td align="left">DungLuong NVARCHAR(20)</td></tr>
+    <tr><td align="left">MauSac NVARCHAR(50)</td></tr>
+    <tr><td align="left">GiaBan DECIMAL(18,0) &gt; 0</td></tr>
+    <tr><td align="left">SoLuongTon INT ≥ 0</td></tr>
+    <tr><td align="left" bgcolor="#f3f5f8"><font point-size="9">UQ (MaSP, DungLuong, MauSac)</font></td></tr></table>>];
+
+  TaiKhoan [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#13233a"><font color="white"><b>TaiKhoan</b></font></td></tr>
+    <tr><td align="left"><b>MaTK</b> INT</td></tr>
+    <tr><td align="left">TenDangNhap NVARCHAR(50) UQ</td></tr>
+    <tr><td align="left">MatKhauHash NVARCHAR(500)</td></tr>
+    <tr><td align="left">HoTen, SoDienThoai, Email</td></tr>
+    <tr><td align="left">VaiTro (Admin|NhanVien|KhachHang)</td></tr>
+    <tr><td align="left">BiKhoa BIT, NgayTao</td></tr></table>>];
+
+  DonHang [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#13233a"><font color="white"><b>DonHang</b></font></td></tr>
+    <tr><td align="left"><b>MaDH</b> INT</td></tr>
+    <tr><td align="left"><i>FK MaKH</i> → TaiKhoan</td></tr>
+    <tr><td align="left">NgayDat DATETIME2</td></tr>
+    <tr><td align="left">HoTenNhan, SoDienThoaiNhan</td></tr>
+    <tr><td align="left">DiaChiGiao NVARCHAR(300)</td></tr>
+    <tr><td align="left">TongTien DECIMAL(18,0)</td></tr>
+    <tr><td align="left">PhuongThucTT, TrangThai</td></tr>
+    <tr><td align="left">DaThanhToan, KyHanTraGop, TraTruoc</td></tr></table>>];
+
+  ChiTietDonHang [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#13233a"><font color="white"><b>ChiTietDonHang</b></font></td></tr>
+    <tr><td align="left"><b>MaCT</b> INT</td></tr>
+    <tr><td align="left"><i>FK MaDH</i> INT</td></tr>
+    <tr><td align="left"><i>FK MaPB</i> INT</td></tr>
+    <tr><td align="left">SoLuong INT &gt; 0</td></tr>
+    <tr><td align="left">DonGia DECIMAL(18,0)</td></tr>
+    <tr><td align="left">IMEI CHAR 15 số, UQ</td></tr></table>>];
+
+  DanhGia [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#ff7a1a"><font color="white"><b>DanhGia</b> (bổ sung)</font></td></tr>
+    <tr><td align="left"><b>MaDG</b> INT</td></tr>
+    <tr><td align="left"><i>FK MaSP</i>, <i>FK MaTK</i></td></tr>
+    <tr><td align="left">Diem INT (1–5)</td></tr>
+    <tr><td align="left">NoiDung (HTML), NgayDanhGia</td></tr></table>>];
+
+  KhuyenMai [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+    <tr><td bgcolor="#ff7a1a"><font color="white"><b>KhuyenMai</b> (bổ sung)</font></td></tr>
+    <tr><td align="left"><b>MaKM</b> INT</td></tr>
+    <tr><td align="left">TieuDe, NoiDung (HTML), AnhBia</td></tr>
+    <tr><td align="left">NgayBatDau, NgayKetThuc, HienThi</td></tr></table>>];
+
+  HangSanXuat -> SanPham        [xlabel="1 – n"];
+  SanPham     -> PhienBan       [xlabel="1 – n"];
+  PhienBan    -> ChiTietDonHang [xlabel="1 – n"];
+  DonHang     -> ChiTietDonHang [xlabel="1 – n"];
+  TaiKhoan    -> DonHang        [xlabel="1 – n"];
+  SanPham     -> DanhGia        [xlabel="1 – n"];
+  TaiKhoan    -> DanhGia        [xlabel="1 – n"];
+  {rank=same; HangSanXuat; TaiKhoan; KhuyenMai}
+}

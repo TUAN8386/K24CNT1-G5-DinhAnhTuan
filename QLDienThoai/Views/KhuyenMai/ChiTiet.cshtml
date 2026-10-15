@@ -1,0 +1,12 @@
+@model KhuyenMai
+@{
+    ViewData["Title"] = Model.TieuDe;
+}
+<article class="box mx-auto" style="max-width:820px">
+    <h1 class="h4 fw-bold">@Model.TieuDe</h1>
+    <div class="small text-muted mb-3">Áp dụng từ @Model.NgayBatDau.ToString("dd/MM/yyyy") đến @Model.NgayKetThuc.ToString("dd/MM/yyyy")</div>
+    @if (!string.IsNullOrEmpty(Model.AnhBia)) { <img src="@Model.AnhBia" alt="" class="img-fluid rounded mb-3" /> }
+    @* Nội dung đã được lọc XSS khi lưu *@
+    <div class="review-content">@Html.Raw(Model.NoiDung)</div>
+    <a asp-action="Index" class="btn btn-link px-0 mt-3"><i class="bi bi-arrow-left"></i> Tất cả khuyến mãi</a>
+</article>

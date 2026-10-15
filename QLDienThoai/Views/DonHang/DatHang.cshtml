@@ -1,0 +1,110 @@
+@model DatHangVM
+@{
+    ViewData["Title"] = "Đặt hàng";
+    var gio = Model.GioHang!;
+    decimal lai = ViewBag.LaiSuatThang ?? 0m;
+}
+
+<h1 class="h4 mb-3">Thông tin đặt hàng</h1>
+
+<form asp-action="DatHang" method="post">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="box mb-3">
+                <h6 class="fw-bold mb-3">Người nhận</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="HoTenNhan" class="form-label"></label>
+                        <input asp-for="HoTenNhan" class="form-control" />
+                        <span asp-validation-for="HoTenNhan" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="SoDienThoaiNhan" class="form-label"></label>
+                        <input asp-for="SoDienThoaiNhan" class="form-control" inputmode="numeric" maxlength="10" />
+                        <span asp-validation-for="SoDienThoaiNhan" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="DiaChiGiao" class="form-label"></label>
+                        <input asp-for="DiaChiGiao" class="form-control" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành" />
+                        <span asp-validation-for="DiaChiGiao" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="GhiChu" class="form-label"></label>
+                        <textarea asp-for="GhiChu" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h6 class="fw-bold mb-3">Phương thức thanh toán</h6>
+                @foreach (var pt in PhuongThucThanhToan.TatCa)
+                {
+                    var moTa = pt switch
+                    {
+                        PhuongThucThanhToan.COD => "Thanh toán khi nhận hàng",
+                        PhuongThucThanhToan.VNPay => "Thanh toán online qua VNPay (sandbox)",
+                        _ => "Trả góp qua công ty tài chính"
+                    };
+                    var ptId = "pt" + Array.IndexOf(PhuongThucThanhToan.TatCa, pt);
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="PhuongThucTT" id="@ptId" value="@pt" checked="@(Model.PhuongThucTT == pt)" />
+                        <label class="form-check-label" for="@ptId"><strong>@pt</strong> – <span class="text-muted">@moTa</span></label>
+                    </div>
+                }
+                <span asp-validation-for="PhuongThucTT" class="text-danger small"></span>
+
+                <div id="traGopFields" class="border rounded p-3 mt-2" data-tragop data-gia="@gio.TongTien.ToString("0")" data-lai="@lai.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label asp-for="PhanTramTraTruoc" class="form-label small"></label>
+                            <select asp-for="PhanTramTraTruoc" class="form-select form-select-sm" data-tg="phantram">
+                                @foreach (var p in new[] { 10, 20, 30, 40, 50, 70 }) { <option value="@p" selected="@(Model.PhanTramTraTruoc == p)">@p%</option> }
+                            </select>
+                            <span asp-validation-for="PhanTramTraTruoc" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="KyHanTraGop" class="form-label small"></label>
+                            <select asp-for="KyHanTraGop" class="form-select form-select-sm" data-tg="kyhan">
+                                @foreach (var k in new[] { 6, 9, 12 }) { <option value="@k" selected="@(Model.KyHanTraGop == k)">@k tháng</option> }
+                            </select>
+                            <span asp-validation-for="KyHanTraGop" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <div class="small mt-2">
+                        Trả trước <strong data-tg="tratruoc"></strong> · Góp <strong class="text-danger" data-tg="gop"></strong>/tháng · Tổng <strong data-tg="tong"></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="box">
+                <h6 class="fw-bold mb-3">Đơn hàng (@gio.Dongs.Sum(d => d.SoLuong) máy)</h6>
+                @foreach (var d in gio.Dongs)
+                {
+                    <div class="d-flex justify-content-between small mb-2">
+                        <span>@d.TenSP @d.DungLuong · @d.MauSac × @d.SoLuong</span>
+                        <span>@d.ThanhTien.ToString("N0") ₫</span>
+                    </div>
+                }
+                <hr />
+                <div class="d-flex justify-content-between fs-5 mb-3"><span>Tổng cộng</span><span class="price">@gio.TongTien.ToString("N0") ₫</span></div>
+                <button class="btn btn-accent w-100" type="submit"><i class="bi bi-check2-circle"></i> Xác nhận đặt hàng</button>
+                <a class="btn btn-link w-100" asp-controller="GioHang" asp-action="Index">Quay lại giỏ hàng</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function hienTraGop() {
+            var chon = document.querySelector('input[name="PhuongThucTT"]:checked');
+            document.getElementById('traGopFields').style.display = chon && chon.value === @Json.Serialize(PhuongThucThanhToan.TraGop) ? '' : 'none';
+        }
+        document.querySelectorAll('input[name="PhuongThucTT"]').forEach(function (r) { r.addEventListener('change', hienTraGop); });
+        hienTraGop();
+    </script>
+}

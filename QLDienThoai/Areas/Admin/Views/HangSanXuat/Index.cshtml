@@ -1,0 +1,35 @@
+@model PagedResult<HangSanXuat>
+@{
+    ViewData["Title"] = "Hãng sản xuất";
+}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0">Hãng sản xuất</h1>
+    <a asp-action="Create" class="btn btn-accent"><i class="bi bi-plus-lg"></i> Thêm hãng</a>
+</div>
+<form method="get" class="d-flex gap-2 mb-3" style="max-width:420px">
+    <input name="q" value="@ViewBag.Q" class="form-control" placeholder="Tìm theo tên hãng, quốc gia" aria-label="Tìm" />
+    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+</form>
+<div class="table-responsive">
+    <table class="table table-hover align-middle table-admin">
+        <thead class="table-light"><tr><th>Logo</th><th>Mã</th><th>Tên hãng</th><th>Quốc gia</th><th>Số sản phẩm</th><th class="text-end">Thao tác</th></tr></thead>
+        <tbody>
+        @foreach (var h in Model.Items)
+        {
+            <tr>
+                <td>@if (!string.IsNullOrEmpty(h.Logo)) { <img src="@h.Logo" class="thumb" alt="@h.TenHang" /> } else { <span class="text-muted small">—</span> }</td>
+                <td>@h.MaHang</td>
+                <td class="fw-semibold">@h.TenHang</td>
+                <td>@h.QuocGia</td>
+                <td>@h.SanPhams.Count</td>
+                <td class="text-end text-nowrap">
+                    <a asp-action="Details" asp-route-id="@h.MaHang" class="btn btn-sm btn-outline-secondary" title="Chi tiết"><i class="bi bi-eye"></i></a>
+                    <a asp-action="Edit" asp-route-id="@h.MaHang" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="Delete" asp-route-id="@h.MaHang" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<partial name="_Pager" model="Model" />

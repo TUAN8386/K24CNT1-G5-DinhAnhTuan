@@ -1,0 +1,13 @@
+@model PhienBan
+@{
+    ViewData["Title"] = "Thêm phiên bản";
+}
+<h1 class="h4 mb-3">Thêm phiên bản (dung lượng – màu – giá)</h1>
+<form asp-action="Create" method="post" class="box" style="max-width:720px">
+    <partial name="_Form" model="Model" />
+    <div class="mt-3">
+        <button class="btn btn-accent" type="submit">Lưu</button>
+        <a asp-action="Index" asp-route-maSP="@(Model.MaSP == 0 ? "" : Model.MaSP.ToString())" class="btn btn-link">Quay lại</a>
+    </div>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,23 @@
+@model TaiKhoan
+@{
+    ViewData["Title"] = "Xóa tài khoản";
+}
+<h1 class="h4 mb-3">Xóa tài khoản: @Model.TenDangNhap</h1>
+<div class="box" style="max-width:600px">
+    @if (Model.DonHangs.Any())
+    {
+        <div class="alert alert-warning">Tài khoản đã có <strong>@Model.DonHangs.Count</strong> đơn hàng nên không thể xóa. Hãy <strong>khóa</strong> tài khoản thay vì xóa.</div>
+        <form asp-action="DoiKhoa" asp-route-id="@Model.MaTK" method="post" class="d-inline">
+            <button class="btn btn-warning" type="submit">@(Model.BiKhoa ? "Mở khóa" : "Khóa tài khoản")</button>
+        </form>
+        <a asp-action="Index" class="btn btn-link">Quay lại</a>
+    }
+    else
+    {
+        <p>Bạn chắc chắn muốn xóa tài khoản <strong>@Model.TenDangNhap</strong> (@Model.HoTen)?</p>
+        <form asp-action="Delete" asp-route-id="@Model.MaTK" method="post">
+            <button class="btn btn-danger" type="submit">Xóa</button>
+            <a asp-action="Index" class="btn btn-link">Hủy</a>
+        </form>
+    }
+</div>

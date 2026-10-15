@@ -1,0 +1,12 @@
+@model KhuyenMai
+@{
+    ViewData["Title"] = Model.TieuDe;
+}
+<h1 class="h4 mb-1">@Model.TieuDe</h1>
+<p class="small text-muted">@Model.NgayBatDau.ToString("dd/MM/yyyy") – @Model.NgayKetThuc.ToString("dd/MM/yyyy") · @(Model.HienThi ? "Đang hiển thị" : "Đang ẩn")</p>
+<div class="box review-content mb-3" style="max-width:900px">
+    @if (!string.IsNullOrEmpty(Model.AnhBia)) { <img src="@Model.AnhBia" alt="" class="img-fluid rounded mb-3" /> }
+    @Html.Raw(Model.NoiDung)
+</div>
+<a asp-action="Edit" asp-route-id="@Model.MaKM" class="btn btn-outline-primary">Sửa</a>
+<a asp-action="Index" class="btn btn-link">Quay lại</a>

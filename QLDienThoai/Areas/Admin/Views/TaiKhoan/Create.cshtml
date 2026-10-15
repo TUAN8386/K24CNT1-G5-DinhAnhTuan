@@ -1,0 +1,13 @@
+@model TaiKhoanFormVM
+@{
+    ViewData["Title"] = "Thêm tài khoản";
+}
+<h1 class="h4 mb-3">Thêm tài khoản</h1>
+<form asp-action="Create" method="post" class="box" style="max-width:760px">
+    <partial name="_Form" model="Model" />
+    <div class="mt-3">
+        <button class="btn btn-accent" type="submit">Lưu</button>
+        <a asp-action="Index" class="btn btn-link">Quay lại</a>
+    </div>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

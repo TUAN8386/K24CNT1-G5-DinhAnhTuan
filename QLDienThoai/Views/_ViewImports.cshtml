@@ -1,0 +1,7 @@
+@using QLDienThoai
+@using QLDienThoai.Models
+@using QLDienThoai.Models.ViewModels
+@using QLDienThoai.Services
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@* Bỏ OptionTagHelper để thuộc tính selected="@(bool)" trên <option> viết tay hoạt động như thuộc tính điều kiện *@
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers

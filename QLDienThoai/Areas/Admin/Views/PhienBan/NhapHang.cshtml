@@ -1,0 +1,18 @@
+@model NhapHangVM
+@{
+    ViewData["Title"] = "Nhập hàng";
+}
+<h1 class="h4 mb-3">Nhập hàng</h1>
+<form asp-action="NhapHang" method="post" class="box" style="max-width:520px">
+    <input type="hidden" asp-for="MaPB" />
+    <p class="mb-1"><strong>@Model.TenPhienBan</strong></p>
+    <p class="text-muted">Tồn hiện tại: @Model.TonHienTai</p>
+    <div class="mb-3">
+        <label asp-for="SoLuongNhap" class="form-label"></label>
+        <input asp-for="SoLuongNhap" class="form-control" type="number" min="1" />
+        <span asp-validation-for="SoLuongNhap" class="text-danger small"></span>
+    </div>
+    <button class="btn btn-accent" type="submit">Xác nhận nhập</button>
+    <a asp-action="Index" class="btn btn-link">Quay lại</a>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

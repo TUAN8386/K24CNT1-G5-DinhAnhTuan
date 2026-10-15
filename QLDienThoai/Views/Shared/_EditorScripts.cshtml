@@ -1,0 +1,89 @@
+@* Trình soạn thảo CKEditor 5 cho các textarea có class "rich-editor".
+   - Thanh công cụ: B, I, U, Tiêu đề (H2/H3), danh sách •, danh sách 1., Link, Ảnh, Bảng, Undo, Redo.
+   - Nút "Ảnh" chỉ bật khi textarea có data-upload-url (trang quản trị sản phẩm); ảnh được gửi lên server
+     kèm token chống CSRF và được kiểm tra đuôi/kích thước/chữ ký file.
+   - Nội dung HTML luôn được lọc XSS phía server bằng HtmlSanitizer trước khi lưu. *@
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
+<script>
+(function () {
+    if (!window.CKEDITOR || !CKEDITOR.ClassicEditor) return; // không tải được CDN -> vẫn dùng textarea thường
+
+    function layToken(el) {
+        var form = el.closest('form');
+        var input = form && form.querySelector('input[name="__RequestVerificationToken"]');
+        return input ? input.value : '';
+    }
+
+    // Bộ chuyển đổi tải ảnh lên server cho CKEditor
+    function TaiAnhAdapter(loader, url, token) { this.loader = loader; this.url = url; this.token = token; }
+    TaiAnhAdapter.prototype.upload = function () {
+        var self = this;
+        return this.loader.file.then(function (file) {
+            return new Promise(function (resolve, reject) {
+                var xhr = self.xhr = new XMLHttpRequest();
+                xhr.open('POST', self.url, true);
+                xhr.setRequestHeader('RequestVerificationToken', self.token);
+                xhr.responseType = 'json';
+                xhr.addEventListener('error', function () { reject('Không tải được ảnh lên máy chủ'); });
+                xhr.addEventListener('abort', function () { reject(); });
+                xhr.addEventListener('load', function () {
+                    var r = xhr.response;
+                    if (xhr.status !== 200 || !r || !r.url) {
+                        return reject(r && r.error ? r.error.message : 'Không tải được ảnh (mã ' + xhr.status + ')');
+                    }
+                    resolve({ default: r.url });
+                });
+                if (xhr.upload) {
+                    xhr.upload.addEventListener('progress', function (e) {
+                        if (e.lengthComputable) { self.loader.uploadTotal = e.total; self.loader.uploaded = e.loaded; }
+                    });
+                }
+                var data = new FormData();
+                data.append('upload', file);
+                xhr.send(data);
+            });
+        });
+    };
+    TaiAnhAdapter.prototype.abort = function () { if (this.xhr) this.xhr.abort(); };
+
+    document.querySelectorAll('textarea.rich-editor').forEach(function (el) {
+        var uploadUrl = el.getAttribute('data-upload-url');
+        var items = ['bold', 'italic', 'underline', 'heading', '|', 'bulletedList', 'numberedList', 'link'];
+        if (uploadUrl) items.push('uploadImage');
+        items.push('insertTable', '|', 'undo', 'redo');
+
+        CKEDITOR.ClassicEditor.create(el, {
+            toolbar: { items: items, shouldNotGroupWhenFull: true },
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Đoạn văn', class: 'ck-heading_paragraph' },
+                    { model: 'heading2', view: 'h2', title: 'Tiêu đề H2', class: 'ck-heading_heading2' },
+                    { model: 'heading3', view: 'h3', title: 'Tiêu đề H3', class: 'ck-heading_heading3' }
+                ]
+            },
+            image: {
+                toolbar: ['imageTextAlternative', '|', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side']
+            },
+            table: { contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'] },
+            link: { defaultProtocol: 'https://' },
+            placeholder: el.getAttribute('placeholder') || '',
+            // Bỏ các plugin thương mại / cần đăng ký có trong bản super-build
+            removePlugins: [
+                'AIAssistant', 'CKBox', 'CKFinder', 'EasyImage', 'Base64UploadAdapter', 'MultiLevelList',
+                'RealTimeCollaborativeComments', 'RealTimeCollaborativeTrackChanges', 'RealTimeCollaborativeRevisionHistory',
+                'PresenceList', 'Comments', 'TrackChanges', 'TrackChangesData', 'RevisionHistory',
+                'Pagination', 'WProofreader', 'MathType',
+                'SlashCommand', 'Template', 'DocumentOutline', 'FormatPainter', 'TableOfContents',
+                'PasteFromOfficeEnhanced', 'CaseChange'
+            ]
+        }).then(function (editor) {
+            if (uploadUrl) {
+                var token = layToken(el);
+                editor.plugins.get('FileRepository').createUploadAdapter = function (loader) {
+                    return new TaiAnhAdapter(loader, uploadUrl, token);
+                };
+            }
+        }).catch(function (err) { console.error(err); });
+    });
+})();
+</script>

@@ -1,0 +1,33 @@
+@model GanImeiVM
+@{
+    ViewData["Title"] = "Gán IMEI";
+}
+<h1 class="h4 mb-3">Gán IMEI cho đơn #@Model.MaDH</h1>
+<form asp-action="GanImei" method="post" class="box" style="max-width:820px">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+    <input type="hidden" asp-for="MaDH" />
+    <p class="small text-muted">Mỗi máy một IMEI gồm đúng 15 chữ số, không được trùng với máy đã bán.</p>
+    <table class="table align-middle">
+        <thead class="table-light"><tr><th>#</th><th>Máy</th><th style="width:260px">IMEI</th></tr></thead>
+        <tbody>
+        @for (var i = 0; i < Model.Dongs.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>
+                    @Model.Dongs[i].TenMay
+                    <input type="hidden" asp-for="Dongs[i].MaCT" />
+                    <input type="hidden" asp-for="Dongs[i].TenMay" />
+                </td>
+                <td>
+                    <input asp-for="Dongs[i].IMEI" class="form-control font-monospace" maxlength="15" inputmode="numeric" />
+                    <span asp-validation-for="Dongs[i].IMEI" class="text-danger small"></span>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <button class="btn btn-accent" type="submit">Lưu IMEI</button>
+    <a asp-action="Details" asp-route-id="@Model.MaDH" class="btn btn-link">Quay lại</a>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

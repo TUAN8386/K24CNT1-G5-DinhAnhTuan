@@ -1,0 +1,31 @@
+@model PagedResult<KhuyenMai>
+@{
+    ViewData["Title"] = "Khuyến mãi";
+}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0">Tin khuyến mãi</h1>
+    <a asp-action="Create" class="btn btn-accent"><i class="bi bi-plus-lg"></i> Đăng tin</a>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover align-middle table-admin">
+        <thead class="table-light"><tr><th>Tiêu đề</th><th>Thời gian</th><th>Hiển thị</th><th class="text-end">Thao tác</th></tr></thead>
+        <tbody>
+        @foreach (var k in Model.Items)
+        {
+            var dangChay = k.NgayBatDau <= DateTime.Today && k.NgayKetThuc >= DateTime.Today;
+            <tr>
+                <td class="fw-semibold">@k.TieuDe</td>
+                <td class="small">@k.NgayBatDau.ToString("dd/MM/yyyy") – @k.NgayKetThuc.ToString("dd/MM/yyyy")
+                    @if (dangChay) { <span class="badge text-bg-success">Đang chạy</span> }</td>
+                <td>@(k.HienThi ? "Có" : "Ẩn")</td>
+                <td class="text-end text-nowrap">
+                    <a asp-action="Details" asp-route-id="@k.MaKM" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                    <a asp-action="Edit" asp-route-id="@k.MaKM" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="Delete" asp-route-id="@k.MaKM" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<partial name="_Pager" model="Model" />

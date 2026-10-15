@@ -1,0 +1,36 @@
+@model KhuyenMai
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<input type="hidden" asp-for="MaKM" />
+<div class="row g-3">
+    <div class="col-12">
+        <label asp-for="TieuDe" class="form-label"></label>
+        <input asp-for="TieuDe" class="form-control" />
+        <span asp-validation-for="TieuDe" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="NgayBatDau" class="form-label"></label>
+        <input asp-for="NgayBatDau" class="form-control" />
+        <span asp-validation-for="NgayBatDau" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="NgayKetThuc" class="form-label"></label>
+        <input asp-for="NgayKetThuc" class="form-control" />
+        <span asp-validation-for="NgayKetThuc" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="HienThi" class="form-check-input" />
+            <label asp-for="HienThi" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="fileAnh">Ảnh bìa (tùy chọn, tối đa 5 MB)</label>
+        <div class="mb-2"><img id="xemTruocBia" src="@(Model.AnhBia ?? "/images/no-phone.svg")" alt="" style="max-height:120px" class="rounded" /></div>
+        <input type="file" name="fileAnh" id="fileAnh" class="form-control" accept=".jpg,.jpeg,.jfif,.png,.webp,.gif" data-preview="#xemTruocBia" />
+        <span class="text-danger small">@Html.ValidationMessage("fileAnh")</span>
+    </div>
+    <div class="col-12">
+        <label asp-for="NoiDung" class="form-label"></label>
+        <textarea asp-for="NoiDung" class="form-control rich-editor" rows="8"></textarea>
+    </div>
+</div>

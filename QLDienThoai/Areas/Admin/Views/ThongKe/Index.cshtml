@@ -1,0 +1,102 @@
+@model ThongKeVM
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+    var thang = Enumerable.Range(1, 12).Select(t => "T" + t).ToArray();
+}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0">Thống kê doanh thu năm @Model.Nam</h1>
+    <form method="get" class="d-flex gap-2">
+        <select name="nam" class="form-select form-select-sm" onchange="this.form.submit()" aria-label="Năm">
+            @foreach (var n in Model.CacNam) { <option value="@n" selected="@(n == Model.Nam)">@n</option> }
+        </select>
+    </form>
+</div>
+<p class="small text-muted">Chỉ tính các đơn ở trạng thái <strong>Hoàn thành</strong>.</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="stat-card"><div class="text-muted small">Tổng doanh thu</div><div class="value text-success">@Model.TongDoanhThu.ToString("N0") ₫</div></div></div>
+    <div class="col-md-4"><div class="stat-card"><div class="text-muted small">Số máy đã bán</div><div class="value">@Model.TheoHang.Sum(h => h.SoMay)</div></div></div>
+    <div class="col-md-4"><div class="stat-card"><div class="text-muted small">Đơn hoàn thành / tổng đơn</div>
+        <div class="value">@(Model.DonTheoTrangThai.GetValueOrDefault(TrangThaiDon.HoanThanh)) / @Model.DonTheoTrangThai.Values.Sum()</div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="box">
+            <h2 class="h6 fw-bold">Doanh thu theo tháng (₫)</h2>
+            <canvas id="bieuDoThang" height="130" aria-label="Biểu đồ doanh thu theo tháng" role="img"></canvas>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="box">
+            <h2 class="h6 fw-bold">Tỷ trọng theo hãng</h2>
+            <canvas id="bieuDoHang" height="220" aria-label="Biểu đồ doanh thu theo hãng" role="img"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="box p-0">
+            <h2 class="h6 fw-bold p-3 pb-0">Doanh thu theo hãng</h2>
+            <table class="table table-sm mb-0">
+                <thead class="table-light"><tr><th>Hãng</th><th class="text-end">Số máy</th><th class="text-end">Doanh thu</th></tr></thead>
+                <tbody>
+                @foreach (var h in Model.TheoHang)
+                {
+                    <tr><td>@h.TenHang</td><td class="text-end">@h.SoMay</td><td class="text-end">@h.DoanhThu.ToString("N0")</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="box p-0">
+            <h2 class="h6 fw-bold p-3 pb-0">Top 5 sản phẩm bán chạy</h2>
+            <table class="table table-sm mb-0">
+                <thead class="table-light"><tr><th>Sản phẩm</th><th class="text-end">Số máy</th><th class="text-end">Doanh thu</th></tr></thead>
+                <tbody>
+                @foreach (var s in Model.TopSanPham)
+                {
+                    <tr><td>@s.TenSP</td><td class="text-end">@s.SoMay</td><td class="text-end">@s.DoanhThu.ToString("N0")</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="box p-0">
+            <h2 class="h6 fw-bold p-3 pb-0">Doanh thu từng tháng</h2>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0 text-end">
+                    <thead class="table-light"><tr>@foreach (var t in thang) { <th>@t</th> }</tr></thead>
+                    <tbody><tr>@foreach (var v in Model.DoanhThuTheoThang) { <td>@((v / 1_000_000m).ToString("0.#"))tr</td> }</tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script>
+        const tien = v => Number(v).toLocaleString('vi-VN') + ' ₫';
+        new Chart(document.getElementById('bieuDoThang'), {
+            type: 'bar',
+            data: {
+                labels: @Json.Serialize(thang),
+                datasets: [{ label: 'Doanh thu', data: @Json.Serialize(Model.DoanhThuTheoThang), backgroundColor: '#ff7a1a', borderRadius: 4 }]
+            },
+            options: {
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => tien(c.parsed.y) } } },
+                scales: { y: { ticks: { callback: v => (v / 1e6) + 'tr' } } }
+            }
+        });
+        new Chart(document.getElementById('bieuDoHang'), {
+            type: 'doughnut',
+            data: {
+                labels: @Json.Serialize(Model.TheoHang.Select(h => h.TenHang)),
+                datasets: [{ data: @Json.Serialize(Model.TheoHang.Select(h => h.DoanhThu)),
+                    backgroundColor: ['#13233a', '#ff7a1a', '#2f80ed', '#27ae60', '#9b51e0', '#f2c94c'] }]
+            },
+            options: { plugins: { tooltip: { callbacks: { label: c => c.label + ': ' + tien(c.parsed) } } } }
+        });
+    </script>
+}

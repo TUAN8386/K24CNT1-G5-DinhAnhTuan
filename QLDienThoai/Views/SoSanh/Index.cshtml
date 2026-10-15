@@ -1,0 +1,72 @@
+@model List<SanPham>
+@{
+    ViewData["Title"] = "So sánh điện thoại";
+    (string Ten, Func<SanPham, object?> Lay)[] dongs =
+    {
+        ("Hãng", s => s.HangSanXuat?.TenHang),
+        ("Giá từ", s => s.PhienBans.Any() ? s.PhienBans.Min(p => p.GiaBan).ToString("N0") + " ₫" : "—"),
+        ("Dung lượng", s => string.Join(", ", s.PhienBans.Select(p => p.DungLuong).Distinct())),
+        ("Màu sắc", s => string.Join(", ", s.PhienBans.Select(p => p.MauSac).Distinct())),
+        ("Màn hình", s => s.ManHinh),
+        ("Chip", s => s.Chip),
+        ("Camera", s => s.Camera),
+        ("Pin", s => s.Pin),
+        ("Hệ điều hành", s => s.HeDieuHanh),
+        ("Đánh giá", s => s.DanhGias.Any() ? s.DanhGias.Average(d => d.Diem).ToString("0.0") + " / 5 (" + s.DanhGias.Count + ")" : "Chưa có")
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">So sánh điện thoại <small class="text-muted fs-6">(tối đa @SoSanhService.ToiDa máy)</small></h1>
+    @if (Model.Any())
+    {
+        <form asp-action="XoaHet" method="post"><button class="btn btn-sm btn-outline-danger" type="submit">Xóa tất cả</button></form>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="box text-center py-5">
+        <p class="text-muted">Chưa có sản phẩm nào để so sánh.</p>
+        <a class="btn btn-accent" asp-controller="SanPham" asp-action="Index">Chọn điện thoại</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered bg-white align-middle compare-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    @foreach (var s in Model)
+                    {
+                        <td class="text-center">
+                            <img src="@(s.AnhDaiDien ?? "/images/no-phone.svg")" alt="@s.TenSP" style="height:140px;object-fit:contain" />
+                            <div class="fw-semibold mt-2"><a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@s.MaSP">@s.TenSP</a></div>
+                            <form asp-action="Xoa" method="post" class="mt-1">
+                                <input type="hidden" name="id" value="@s.MaSP" />
+                                <button type="submit" class="btn btn-link btn-sm text-danger p-0">Bỏ so sánh</button>
+                            </form>
+                        </td>
+                    }
+                    @if (Model.Count < SoSanhService.ToiDa)
+                    {
+                        <td class="text-center text-muted">
+                            <a asp-controller="SanPham" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i> Thêm máy</a>
+                        </td>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in dongs)
+                {
+                    <tr>
+                        <th>@d.Ten</th>
+                        @foreach (var s in Model) { <td>@d.Lay(s)</td> }
+                        @if (Model.Count < SoSanhService.ToiDa) { <td></td> }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

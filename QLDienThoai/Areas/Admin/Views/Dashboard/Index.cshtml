@@ -1,0 +1,69 @@
+@model DashboardVM
+@{
+    ViewData["Title"] = "Tổng quan";
+}
+<h1 class="h4 mb-3">Tổng quan</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl">
+        <a class="stat-card d-block text-decoration-none" asp-controller="DonHang" asp-action="Index" asp-route-trangThai="@TrangThaiDon.ChoXacNhan">
+            <div class="text-muted small">Đơn chờ xác nhận</div><div class="value text-warning">@Model.SoDonChoXacNhan</div>
+        </a>
+    </div>
+    <div class="col-6 col-xl"><div class="stat-card"><div class="text-muted small">Đơn hôm nay</div><div class="value">@Model.SoDonHomNay</div></div></div>
+    <div class="col-12 col-sm-6 col-xl"><div class="stat-card"><div class="text-muted small">Doanh thu tháng này</div><div class="value text-success">@Model.DoanhThuThangNay.ToString("N0") ₫</div></div></div>
+    <div class="col-6 col-xl"><div class="stat-card"><div class="text-muted small">Sản phẩm</div><div class="value">@Model.SoSanPham</div></div></div>
+    <div class="col-6 col-xl"><div class="stat-card"><div class="text-muted small">Khách hàng</div><div class="value">@Model.SoKhachHang</div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-7">
+        <div class="box p-0">
+            <div class="d-flex justify-content-between align-items-center p-3 pb-2">
+                <h2 class="h6 fw-bold mb-0">Đơn hàng mới</h2>
+                <a asp-controller="DonHang" asp-action="Index" class="small">Xem tất cả</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light"><tr><th>Mã</th><th>Khách</th><th>Ngày</th><th class="text-end">Tổng</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                    @foreach (var d in Model.DonMoi)
+                    {
+                        <tr>
+                            <td><a asp-controller="DonHang" asp-action="Details" asp-route-id="@d.MaDH">#@d.MaDH</a></td>
+                            <td>@d.HoTenNhan</td>
+                            <td class="small">@d.NgayDat.ToString("dd/MM HH:mm")</td>
+                            <td class="text-end">@d.TongTien.ToString("N0")</td>
+                            <td><span class="badge text-bg-@TrangThaiDon.MauBadge(d.TrangThai)">@d.TrangThai</span></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="box p-0">
+            <div class="d-flex justify-content-between align-items-center p-3 pb-2">
+                <h2 class="h6 fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle"></i> Sắp hết hàng (≤ 3)</h2>
+                <a asp-controller="PhienBan" asp-action="Index" asp-route-sapHet="true" class="small">Xem tất cả</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                @foreach (var p in Model.SapHetHang)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span class="small">@p.TenDayDu</span>
+                        <span>
+                            <span class="badge @(p.SoLuongTon == 0 ? "text-bg-danger" : "text-bg-warning")">@p.SoLuongTon</span>
+                            @if (User.IsInRole(VaiTro.Admin))
+                            {
+                                <a asp-controller="PhienBan" asp-action="NhapHang" asp-route-id="@p.MaPB" class="btn btn-sm btn-outline-primary ms-1">Nhập</a>
+                            }
+                        </span>
+                    </li>
+                }
+                @if (!Model.SapHetHang.Any()) { <li class="list-group-item text-muted small">Không có phiên bản nào sắp hết.</li> }
+            </ul>
+        </div>
+    </div>
+</div>

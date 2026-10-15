@@ -1,0 +1,39 @@
+@model TaoDonVM
+@{
+    ViewData["Title"] = "Tạo đơn tại quầy";
+}
+<h1 class="h4 mb-3">Tạo đơn tại quầy</h1>
+<form asp-action="Create" method="post" class="box" style="max-width:720px">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+    <div class="row g-3">
+        <div class="col-12">
+            <label asp-for="MaKH" class="form-label"></label>
+            <select asp-for="MaKH" asp-items="ViewBag.MaKH" class="form-select"><option value="">-- Chọn khách hàng --</option></select>
+            <span asp-validation-for="MaKH" class="text-danger small"></span>
+        </div>
+        <div class="col-md-9">
+            <label asp-for="MaPB" class="form-label"></label>
+            <select asp-for="MaPB" asp-items="ViewBag.MaPB" class="form-select"><option value="">-- Chọn máy --</option></select>
+            <span asp-validation-for="MaPB" class="text-danger small"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="SoLuong" class="form-label"></label>
+            <input asp-for="SoLuong" class="form-control" type="number" min="1" max="10" />
+            <span asp-validation-for="SoLuong" class="text-danger small"></span>
+        </div>
+        <div class="col-md-8">
+            <label asp-for="DiaChiGiao" class="form-label"></label>
+            <input asp-for="DiaChiGiao" class="form-control" />
+            <span asp-validation-for="DiaChiGiao" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="PhuongThucTT" class="form-label"></label>
+            <select asp-for="PhuongThucTT" asp-items="ViewBag.PhuongThuc" class="form-select"></select>
+        </div>
+    </div>
+    <div class="mt-3">
+        <button class="btn btn-accent" type="submit">Tạo đơn</button>
+        <a asp-action="Index" class="btn btn-link">Quay lại</a>
+    </div>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

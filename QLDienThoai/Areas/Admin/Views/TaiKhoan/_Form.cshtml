@@ -1,0 +1,40 @@
+@model TaiKhoanFormVM
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<input type="hidden" asp-for="MaTK" />
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="TenDangNhap" class="form-label"></label>
+        <input asp-for="TenDangNhap" class="form-control" autocomplete="off" />
+        <span asp-validation-for="TenDangNhap" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="MatKhau" class="form-label">@(Model.MaTK == 0 ? "Mật khẩu" : "Mật khẩu mới (để trống nếu không đổi)")</label>
+        <input asp-for="MatKhau" class="form-control" autocomplete="new-password" />
+        <span asp-validation-for="MatKhau" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="HoTen" class="form-label"></label>
+        <input asp-for="HoTen" class="form-control" />
+        <span asp-validation-for="HoTen" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="SoDienThoai" class="form-label"></label>
+        <input asp-for="SoDienThoai" class="form-control" maxlength="10" />
+        <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="VaiTro" class="form-label"></label>
+        <select asp-for="VaiTro" class="form-select"
+                asp-items="@(VaiTro.TatCa.Select(v => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(VaiTro.TenHienThi(v), v)))"></select>
+        <span asp-validation-for="VaiTro" class="text-danger small"></span>
+    </div>
+    <div class="col-12 form-check ms-2">
+        <input asp-for="BiKhoa" class="form-check-input" />
+        <label asp-for="BiKhoa" class="form-check-label"></label>
+    </div>
+</div>

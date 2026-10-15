@@ -1,0 +1,22 @@
+@model PhienBan
+@{
+    ViewData["Title"] = "Xóa phiên bản";
+    bool daBan = ViewBag.DaBan == true;
+}
+<h1 class="h4 mb-3">Xóa phiên bản: @Model.TenDayDu</h1>
+<div class="box" style="max-width:600px">
+    @if (daBan)
+    {
+        <div class="alert alert-warning">Phiên bản đã có trong đơn hàng nên <strong>không thể xóa</strong>. Có thể đặt tồn kho về 0 để ngừng bán.</div>
+        <a asp-action="Edit" asp-route-id="@Model.MaPB" class="btn btn-outline-primary">Sửa tồn kho</a>
+        <a asp-action="Index" asp-route-maSP="@Model.MaSP" class="btn btn-link">Quay lại</a>
+    }
+    else
+    {
+        <p>Bạn chắc chắn muốn xóa phiên bản <strong>@Model.TenDayDu</strong>?</p>
+        <form asp-action="Delete" asp-route-id="@Model.MaPB" method="post">
+            <button class="btn btn-danger" type="submit">Xóa</button>
+            <a asp-action="Index" asp-route-maSP="@Model.MaSP" class="btn btn-link">Hủy</a>
+        </form>
+    }
+</div>

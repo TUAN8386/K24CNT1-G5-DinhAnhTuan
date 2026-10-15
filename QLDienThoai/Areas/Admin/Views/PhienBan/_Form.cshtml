@@ -1,0 +1,34 @@
+@model PhienBan
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<input type="hidden" asp-for="MaPB" />
+<div class="row g-3">
+    <div class="col-12">
+        <label asp-for="MaSP" class="form-label"></label>
+        <select asp-for="MaSP" asp-items="ViewBag.MaSP" class="form-select"><option value="">-- Chọn sản phẩm --</option></select>
+        <span asp-validation-for="MaSP" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="DungLuong" class="form-label"></label>
+        <input asp-for="DungLuong" class="form-control" list="dsDungLuong" placeholder="VD: 256GB" />
+        <datalist id="dsDungLuong"><option value="64GB"></option><option value="128GB"></option><option value="256GB"></option><option value="512GB"></option><option value="1TB"></option></datalist>
+        <span asp-validation-for="DungLuong" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="MauSac" class="form-label"></label>
+        <input asp-for="MauSac" class="form-control" />
+        <span asp-validation-for="MauSac" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="GiaBan" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="GiaBan" class="form-control" type="number" min="1" step="1000" />
+            <span class="input-group-text">₫</span>
+        </div>
+        <span asp-validation-for="GiaBan" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="SoLuongTon" class="form-label"></label>
+        <input asp-for="SoLuongTon" class="form-control" type="number" min="0" />
+        <span asp-validation-for="SoLuongTon" class="text-danger small"></span>
+    </div>
+</div>

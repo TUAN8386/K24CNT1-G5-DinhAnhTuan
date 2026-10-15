@@ -1,0 +1,57 @@
+@model SanPham
+@{
+    ViewData["Title"] = "Sửa sản phẩm";
+}
+<h1 class="h3 fw-bold mb-1">Sửa sản phẩm</h1>
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb small mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Sản phẩm</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Sửa: @Model.TenSP</li>
+    </ol>
+</nav>
+
+<form asp-action="Edit" asp-route-id="@Model.MaSP" method="post" enctype="multipart/form-data" class="admin-form">
+    <partial name="_Form" model="Model" />
+    <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+        <button class="btn btn-success fw-semibold px-5" type="submit">Lưu</button>
+        <a asp-action="Index" class="btn btn-outline-secondary px-4">Quay lại</a>
+        <a asp-controller="PhienBan" asp-action="Index" asp-route-maSP="@Model.MaSP" class="btn btn-link">Quản lý phiên bản</a>
+    </div>
+</form>
+
+<div class="box mt-4 admin-form">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <strong><i class="bi bi-images"></i> Thư viện ảnh (@Model.HinhAnhs.Count/@QLDienThoai.Areas.Admin.Controllers.SanPhamController.SoAnhPhuToiDa)</strong>
+        <span class="small text-muted">Thêm ảnh bằng ô "Ảnh phụ – thư viện ảnh" ở trên rồi bấm Lưu.</span>
+    </div>
+    @if (!Model.HinhAnhs.Any())
+    {
+        <div class="text-muted small">Sản phẩm chưa có ảnh phụ.</div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var h in Model.HinhAnhs.OrderBy(h => h.ThuTu))
+            {
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="gallery-admin-item">
+                        <img src="@h.DuongDan" alt="Ảnh phụ" />
+                        <div class="d-flex gap-1 mt-2">
+                            <form asp-action="DatAnhChinh" asp-route-id="@h.MaHA" method="post" class="flex-fill">
+                                <button class="btn btn-sm btn-outline-primary w-100" type="submit" title="Đặt làm ảnh đại diện"><i class="bi bi-star"></i> Ảnh chính</button>
+                            </form>
+                            <form asp-action="XoaAnhPhu" asp-route-id="@h.MaHA" method="post" data-confirm="Xóa ảnh này khỏi thư viện?">
+                                <button class="btn btn-sm btn-outline-danger" type="submit" title="Xóa ảnh"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_EditorScripts" />
+}

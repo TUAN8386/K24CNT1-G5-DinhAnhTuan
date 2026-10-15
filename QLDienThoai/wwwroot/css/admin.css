@@ -1,0 +1,24 @@
+/* ===== Khu quản trị (theo wireframe: menu trái tối "QUẢN TRỊ", mục đang chọn màu xanh) ===== */
+body.admin { background: #fff; }
+.admin-wrap { min-height: 100vh; }
+.admin-sidebar { background: #212529 !important; color: #fff; width: 240px; min-height: 100vh; display: flex; flex-direction: column; }
+.admin-brand { padding: 1.1rem 1.25rem .9rem; }
+.admin-brand a { color: #fff; font-weight: 700; font-size: 1.15rem; letter-spacing: .03em; text-decoration: none; }
+.admin-sidebar .nav-link { color: rgba(255,255,255,.88); padding: .55rem 1.25rem; border-radius: 0; }
+.admin-sidebar .nav-link:hover { background: rgba(255,255,255,.08); color: #fff; }
+.admin-sidebar .nav-link.active { background: #0d6efd; color: #fff; }
+.admin-user { padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,.12); }
+.admin-mobilebar { background: #212529; color: #fff; padding: .6rem 1rem; display: flex; align-items: center; gap: .75rem; }
+.admin-main { min-width: 0; background: #fff; border-left: 1px solid #dee2e6; }
+.admin-form { max-width: 1000px; }
+.admin-form .form-control, .admin-form .form-select { border-color: #adb5bd; }
+.anh-preview-box { width: 150px; height: 115px; border: 1px solid #adb5bd; background: #f1f3f5; display: flex; align-items: center; justify-content: center; }
+.anh-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.stat-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.25rem; }
+.stat-card .value { font-size: 1.6rem; font-weight: 700; color: var(--ink); }
+.table-admin { background: #fff; }
+.thumb { width: 48px; height: 48px; object-fit: contain; background: #fff; border-radius: 6px; }
+@media (max-width: 991.98px) {
+    .admin-sidebar { width: 260px; min-height: 0; }
+    .admin-main { border-left: 0; }
+}

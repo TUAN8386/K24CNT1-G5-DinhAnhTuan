@@ -1,0 +1,20 @@
+@model DonHang
+@{
+    ViewData["Title"] = "Xóa đơn hàng";
+}
+<h1 class="h4 mb-3">Xóa đơn hàng #@Model.MaDH</h1>
+<div class="box" style="max-width:600px">
+    @if (Model.TrangThai != TrangThaiDon.DaHuy)
+    {
+        <div class="alert alert-warning">Chỉ được xóa đơn đã hủy. Đơn này đang ở trạng thái <strong>@Model.TrangThai</strong>.</div>
+        <a asp-action="Details" asp-route-id="@Model.MaDH" class="btn btn-secondary">Quay lại</a>
+    }
+    else
+    {
+        <p>Xóa vĩnh viễn đơn <strong>#@Model.MaDH</strong> của @Model.HoTenNhan (@Model.ChiTietDonHangs.Count máy, @Model.TongTien.ToString("N0") ₫)?</p>
+        <form asp-action="Delete" asp-route-id="@Model.MaDH" method="post">
+            <button class="btn btn-danger" type="submit">Xóa</button>
+            <a asp-action="Details" asp-route-id="@Model.MaDH" class="btn btn-link">Hủy</a>
+        </form>
+    }
+</div>

@@ -1,0 +1,22 @@
+@model PhienBan
+@{
+    ViewData["Title"] = "Chi tiết phiên bản";
+}
+<h1 class="h4 mb-3">@Model.TenDayDu</h1>
+<div class="box mb-3" style="max-width:640px">
+    <dl class="row mb-0">
+        <dt class="col-sm-4">Mã phiên bản</dt><dd class="col-sm-8">@Model.MaPB</dd>
+        <dt class="col-sm-4">Sản phẩm</dt><dd class="col-sm-8">@Model.SanPham?.TenSP</dd>
+        <dt class="col-sm-4">Dung lượng</dt><dd class="col-sm-8">@Model.DungLuong</dd>
+        <dt class="col-sm-4">Màu sắc</dt><dd class="col-sm-8">@Model.MauSac</dd>
+        <dt class="col-sm-4">Giá bán</dt><dd class="col-sm-8">@Model.GiaBan.ToString("N0") ₫</dd>
+        <dt class="col-sm-4">Tồn kho</dt><dd class="col-sm-8">@Model.SoLuongTon</dd>
+        <dt class="col-sm-4">Đã bán (không tính đơn hủy)</dt><dd class="col-sm-8">@ViewBag.DaBan</dd>
+    </dl>
+</div>
+@if (User.IsInRole(VaiTro.Admin))
+{
+    <a asp-action="NhapHang" asp-route-id="@Model.MaPB" class="btn btn-outline-success">Nhập hàng</a>
+    <a asp-action="Edit" asp-route-id="@Model.MaPB" class="btn btn-outline-primary">Sửa</a>
+}
+<a asp-action="Index" asp-route-maSP="@Model.MaSP" class="btn btn-link">Quay lại</a>

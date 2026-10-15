@@ -1,0 +1,40 @@
+@model IPagedResult
+@using Microsoft.AspNetCore.Http.Extensions
+@{
+    string Link(int p)
+    {
+        // Giữ nguyên mọi tham số lọc (kể cả tham số lặp như hang=1&hang=2), chỉ đổi số trang
+        var qb = new QueryBuilder();
+        foreach (var kv in Context.Request.Query)
+        {
+            if (kv.Key.Equals("page", StringComparison.OrdinalIgnoreCase)) continue;
+            foreach (var v in kv.Value) qb.Add(kv.Key, v ?? string.Empty);
+        }
+        qb.Add("page", p.ToString());
+        return Context.Request.PathBase + Context.Request.Path + qb.ToQueryString();
+    }
+    var tu = Math.Max(1, Model.PageIndex - 2);
+    var den = Math.Min(Model.TotalPages, Model.PageIndex + 2);
+}
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Phân trang" class="mt-4">
+        <ul class="pagination justify-content-center mb-1">
+            <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Link(Model.PageIndex - 1)" aria-label="Trang trước">&laquo;</a>
+            </li>
+            @for (var i = tu; i <= den; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")"><a class="page-link" href="@Link(i)">@i</a></li>
+            }
+            <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="@Link(Model.PageIndex + 1)" aria-label="Trang sau">&raquo;</a>
+            </li>
+        </ul>
+        <p class="text-center text-muted small mb-0">Trang @Model.PageIndex / @Model.TotalPages – @Model.TotalCount kết quả</p>
+    </nav>
+}
+else
+{
+    <p class="text-muted small mt-3 mb-0">@Model.TotalCount kết quả</p>
+}

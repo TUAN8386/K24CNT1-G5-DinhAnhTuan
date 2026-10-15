@@ -1,0 +1,71 @@
+@model DonHang
+@{
+    ViewData["Title"] = $"Đơn hàng #{Model.MaDH}";
+    var buoc = new[] { TrangThaiDon.ChoXacNhan, TrangThaiDon.DaXacNhan, TrangThaiDon.DangGiao, TrangThaiDon.HoanThanh };
+    var viTri = Array.IndexOf(buoc, Model.TrangThai);
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0">Đơn hàng #@Model.MaDH <span class="badge text-bg-@TrangThaiDon.MauBadge(Model.TrangThai) fs-6 align-middle">@Model.TrangThai</span></h1>
+    <a asp-action="LichSu" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Danh sách đơn</a>
+</div>
+
+@if (Model.TrangThai != TrangThaiDon.DaHuy)
+{
+    <div class="box mb-3">
+        <div class="d-flex justify-content-between text-center small">
+            @for (var i = 0; i < buoc.Length; i++)
+            {
+                <div class="flex-fill @(i <= viTri ? "text-success fw-semibold" : "text-muted")">
+                    <i class="bi @(i <= viTri ? "bi-check-circle-fill" : "bi-circle") fs-5"></i><br />@buoc[i]
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="box p-0">
+            <table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Sản phẩm</th><th>IMEI</th><th class="text-end">Đơn giá</th></tr></thead>
+                <tbody>
+                    @foreach (var ct in Model.ChiTietDonHangs)
+                    {
+                        <tr>
+                            <td><a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@ct.PhienBan?.MaSP">@ct.PhienBan?.SanPham?.TenSP</a>
+                                <div class="small text-muted">@ct.PhienBan?.DungLuong · @ct.PhienBan?.MauSac</div></td>
+                            <td class="font-monospace small">@(ct.IMEI ?? "Chưa gán")</td>
+                            <td class="text-end">@ct.DonGia.ToString("N0") ₫</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot><tr><th colspan="2" class="text-end">Tổng cộng</th><th class="text-end price">@Model.TongTien.ToString("N0") ₫</th></tr></tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="box small">
+            <p class="mb-1"><strong>Ngày đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+            <p class="mb-1"><strong>Người nhận:</strong> @Model.HoTenNhan – @Model.SoDienThoaiNhan</p>
+            <p class="mb-1"><strong>Địa chỉ:</strong> @Model.DiaChiGiao</p>
+            <p class="mb-1"><strong>Thanh toán:</strong> @Model.PhuongThucTT – @(Model.DaThanhToan ? "Đã thanh toán" : "Chưa thanh toán")</p>
+            @if (Model.PhuongThucTT == PhuongThucThanhToan.TraGop)
+            {
+                <p class="mb-1"><strong>Trả góp:</strong> @Model.KyHanTraGop tháng, trả trước @Model.TraTruoc?.ToString("N0") ₫</p>
+            }
+            @if (!string.IsNullOrEmpty(Model.GhiChu)) { <p class="mb-1"><strong>Ghi chú:</strong> @Model.GhiChu</p> }
+
+            @if (Model.PhuongThucTT == PhuongThucThanhToan.VNPay && !Model.DaThanhToan && Model.TrangThai != TrangThaiDon.DaHuy)
+            {
+                <a class="btn btn-primary btn-sm w-100 mt-2" asp-action="ThanhToanVnPay" asp-route-id="@Model.MaDH"><i class="bi bi-credit-card"></i> Thanh toán VNPay</a>
+            }
+            @if (Model.TrangThai == TrangThaiDon.ChoXacNhan)
+            {
+                <form asp-action="Huy" asp-route-id="@Model.MaDH" method="post" data-confirm="Bạn chắc chắn muốn hủy đơn này?" class="mt-2">
+                    <button class="btn btn-outline-danger btn-sm w-100" type="submit">Hủy đơn hàng</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

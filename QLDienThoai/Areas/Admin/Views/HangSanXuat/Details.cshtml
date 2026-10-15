@@ -1,0 +1,19 @@
+@model HangSanXuat
+@{
+    ViewData["Title"] = Model.TenHang;
+}
+<h1 class="h4 mb-3">Hãng: @Model.TenHang</h1>
+<div class="box mb-3" style="max-width:700px">
+    <dl class="row mb-0">
+        <dt class="col-sm-3">Mã hãng</dt><dd class="col-sm-9">@Model.MaHang</dd>
+        <dt class="col-sm-3">Quốc gia</dt><dd class="col-sm-9">@Model.QuocGia</dd>
+        <dt class="col-sm-3">Logo</dt><dd class="col-sm-9">@if (!string.IsNullOrEmpty(Model.Logo)) { <img src="@Model.Logo" class="thumb" alt="" /> } else { <span>—</span> }</dd>
+        <dt class="col-sm-3">Sản phẩm</dt>
+        <dd class="col-sm-9">
+            @foreach (var s in Model.SanPhams) { <div><a asp-controller="SanPham" asp-action="Details" asp-route-id="@s.MaSP">@s.TenSP</a></div> }
+            @if (!Model.SanPhams.Any()) { <span class="text-muted">Chưa có</span> }
+        </dd>
+    </dl>
+</div>
+<a asp-action="Edit" asp-route-id="@Model.MaHang" class="btn btn-outline-primary">Sửa</a>
+<a asp-action="Index" class="btn btn-link">Quay lại</a>

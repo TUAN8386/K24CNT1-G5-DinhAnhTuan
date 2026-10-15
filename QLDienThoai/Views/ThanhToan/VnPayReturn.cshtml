@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Kết quả thanh toán";
+    bool ok = ViewBag.ThanhCong == true;
+    int maDH = ViewBag.MaDH ?? 0;
+}
+<div class="box text-center py-5 mx-auto" style="max-width:600px">
+    <i class="bi @(ok ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")" style="font-size:3.5rem"></i>
+    <h1 class="h4 mt-3">@(ok ? "Thanh toán thành công" : "Thanh toán không thành công")</h1>
+    <p>@ViewBag.KetQua</p>
+    @if (maDH > 0 && User.IsInRole(VaiTro.KhachHang))
+    {
+        <a class="btn btn-accent" asp-controller="DonHang" asp-action="ChiTiet" asp-route-id="@maDH">Xem đơn hàng</a>
+    }
+    <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">Trang chủ</a>
+</div>

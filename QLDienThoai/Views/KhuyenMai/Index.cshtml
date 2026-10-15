@@ -1,0 +1,23 @@
+@model List<KhuyenMai>
+@{
+    ViewData["Title"] = "Khuyến mãi";
+}
+<h1 class="h4 mb-3"><i class="bi bi-megaphone"></i> Tin khuyến mãi</h1>
+@if (!Model.Any())
+{
+    <div class="box text-muted text-center py-5">Hiện chưa có chương trình khuyến mãi.</div>
+}
+<div class="row row-cols-1 row-cols-md-2 g-3">
+    @foreach (var km in Model)
+    {
+        <div class="col">
+            <div class="card h-100 product-card">
+                @if (!string.IsNullOrEmpty(km.AnhBia)) { <img src="@km.AnhBia" class="card-img-top" alt="" style="height:180px;object-fit:cover" /> }
+                <div class="card-body">
+                    <h2 class="h6 fw-bold"><a asp-action="ChiTiet" asp-route-id="@km.MaKM" class="stretched-link text-decoration-none text-dark">@km.TieuDe</a></h2>
+                    <div class="small text-muted">@km.NgayBatDau.ToString("dd/MM") – @km.NgayKetThuc.ToString("dd/MM/yyyy")</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

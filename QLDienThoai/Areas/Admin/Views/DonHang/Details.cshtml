@@ -1,0 +1,77 @@
+@model DonHang
+@{
+    ViewData["Title"] = $"Đơn #{Model.MaDH}";
+    var tiepTheo = TrangThaiDon.TatCa.Where(t => TrangThaiDon.ChuyenHopLe(Model.TrangThai, t)).ToList();
+    var thieuImei = Model.ChiTietDonHangs.Count(c => string.IsNullOrEmpty(c.IMEI));
+}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0">Đơn hàng #@Model.MaDH <span class="badge text-bg-@TrangThaiDon.MauBadge(Model.TrangThai) align-middle">@Model.TrangThai</span></h1>
+    <div class="d-flex gap-2">
+        @if (Model.TrangThai is not (TrangThaiDon.HoanThanh or TrangThaiDon.DaHuy))
+        {
+            <a asp-action="GanImei" asp-route-id="@Model.MaDH" class="btn btn-sm btn-outline-success"><i class="bi bi-upc-scan"></i> Gán IMEI</a>
+            <a asp-action="Edit" asp-route-id="@Model.MaDH" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Sửa thông tin</a>
+        }
+        @if (Model.TrangThai == TrangThaiDon.DaHuy && User.IsInRole(VaiTro.Admin))
+        {
+            <a asp-action="Delete" asp-route-id="@Model.MaDH" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Xóa</a>
+        }
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Danh sách</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="box p-0 mb-3">
+            <table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>#</th><th>Máy</th><th>IMEI</th><th class="text-end">Đơn giá</th></tr></thead>
+                <tbody>
+                @{ var stt = 1; }
+                @foreach (var ct in Model.ChiTietDonHangs)
+                {
+                    <tr>
+                        <td>@(stt++)</td>
+                        <td>@ct.PhienBan?.TenDayDu</td>
+                        <td class="font-monospace small">@(ct.IMEI ?? "—")</td>
+                        <td class="text-end">@ct.DonGia.ToString("N0")</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot><tr><th colspan="3" class="text-end">Tổng cộng</th><th class="text-end price">@Model.TongTien.ToString("N0") ₫</th></tr></tfoot>
+            </table>
+        </div>
+        @if (thieuImei > 0 && Model.TrangThai is not (TrangThaiDon.HoanThanh or TrangThaiDon.DaHuy))
+        {
+            <div class="alert alert-info small">Còn <strong>@thieuImei</strong> máy chưa gán IMEI. Phải gán đủ IMEI trước khi chuyển sang "Đang giao".</div>
+        }
+    </div>
+    <div class="col-lg-4">
+        <div class="box small mb-3">
+            <p class="mb-1"><strong>Khách hàng:</strong> @Model.KhachHang?.HoTen (@Model.KhachHang?.TenDangNhap)</p>
+            <p class="mb-1"><strong>Người nhận:</strong> @Model.HoTenNhan – @Model.SoDienThoaiNhan</p>
+            <p class="mb-1"><strong>Địa chỉ:</strong> @Model.DiaChiGiao</p>
+            <p class="mb-1"><strong>Ngày đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+            <p class="mb-1"><strong>Thanh toán:</strong> @Model.PhuongThucTT – @(Model.DaThanhToan ? "Đã thanh toán" : "Chưa thanh toán")</p>
+            @if (Model.PhuongThucTT == PhuongThucThanhToan.TraGop)
+            {
+                <p class="mb-1"><strong>Trả góp:</strong> @Model.KyHanTraGop tháng, trả trước @Model.TraTruoc?.ToString("N0") ₫</p>
+            }
+            @if (!string.IsNullOrEmpty(Model.GhiChu)) { <p class="mb-0"><strong>Ghi chú:</strong> @Model.GhiChu</p> }
+        </div>
+
+        @if (tiepTheo.Any())
+        {
+            <div class="box">
+                <div class="fw-semibold mb-2">Cập nhật tiến độ</div>
+                @foreach (var t in tiepTheo)
+                {
+                    <form asp-action="CapNhatTrangThai" method="post" class="d-inline" data-confirm="Chuyển đơn #@Model.MaDH sang &quot;@t&quot;?">
+                        <input type="hidden" name="id" value="@Model.MaDH" />
+                        <input type="hidden" name="trangThaiMoi" value="@t" />
+                        <button type="submit" class="btn btn-sm @(t == TrangThaiDon.DaHuy ? "btn-outline-danger" : "btn-primary") mb-1">@t</button>
+                    </form>
+                }
+            </div>
+        }
+    </div>
+</div>

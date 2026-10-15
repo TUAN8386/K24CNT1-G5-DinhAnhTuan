@@ -1,0 +1,12 @@
+@model KhuyenMai
+@{
+    ViewData["Title"] = "Xóa tin khuyến mãi";
+}
+<h1 class="h4 mb-3">Xóa tin khuyến mãi</h1>
+<div class="box" style="max-width:600px">
+    <p>Bạn chắc chắn muốn xóa tin <strong>@Model.TieuDe</strong>?</p>
+    <form asp-action="Delete" asp-route-id="@Model.MaKM" method="post">
+        <button class="btn btn-danger" type="submit">Xóa</button>
+        <a asp-action="Index" class="btn btn-link">Hủy</a>
+    </form>
+</div>

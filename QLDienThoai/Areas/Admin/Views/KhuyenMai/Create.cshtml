@@ -1,0 +1,16 @@
+@model KhuyenMai
+@{
+    ViewData["Title"] = "Đăng tin khuyến mãi";
+}
+<h1 class="h4 mb-3">Đăng tin khuyến mãi</h1>
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="box" style="max-width:960px">
+    <partial name="_Form" model="Model" />
+    <div class="mt-3">
+        <button class="btn btn-accent" type="submit">Đăng</button>
+        <a asp-action="Index" class="btn btn-link">Quay lại</a>
+    </div>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_EditorScripts" />
+}

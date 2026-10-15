@@ -1,0 +1,17 @@
+@model DonHang
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+<div class="box text-center py-5 mx-auto" style="max-width:620px">
+    <i class="bi bi-check-circle-fill text-success" style="font-size:3.5rem"></i>
+    <h1 class="h4 mt-3">Đặt hàng thành công!</h1>
+    <p class="mb-1">Mã đơn hàng: <strong>#@Model.MaDH</strong></p>
+    <p class="mb-1">Tổng tiền: <strong class="price">@Model.TongTien.ToString("N0") ₫</strong> – @Model.PhuongThucTT</p>
+    @if (Model.PhuongThucTT == PhuongThucThanhToan.TraGop)
+    {
+        <p class="mb-1 small">Trả góp @Model.KyHanTraGop tháng, trả trước @Model.TraTruoc?.ToString("N0") ₫. Nhân viên sẽ liên hệ để hoàn tất hồ sơ.</p>
+    }
+    <p class="text-muted small">Email xác nhận đã được gửi (nếu tài khoản có email). Nhân viên sẽ gọi xác nhận trong thời gian sớm nhất.</p>
+    <a class="btn btn-accent" asp-action="ChiTiet" asp-route-id="@Model.MaDH">Xem đơn hàng</a>
+    <a class="btn btn-outline-secondary" asp-controller="SanPham" asp-action="Index">Tiếp tục mua sắm</a>
+</div>

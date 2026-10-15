@@ -1,0 +1,107 @@
+@model SanPham
+@{
+    var coLoiServer = !ViewData.ModelState.IsValid;
+    var loiChung = ViewData.ModelState.Where(kv => string.IsNullOrEmpty(kv.Key))
+        .SelectMany(kv => kv.Value!.Errors).Select(e => e.ErrorMessage).ToList();
+}
+<input type="hidden" asp-for="MaSP" />
+
+<div class="row g-4">
+    @* Hàng 1: Tên sản phẩm | Hãng sản xuất *@
+    <div class="col-md-6">
+        <label asp-for="TenSP" class="form-label fw-semibold">Tên sản phẩm <span class="text-danger">*</span></label>
+        <input asp-for="TenSP" class="form-control" placeholder="iPhone 16 Pro Max" />
+        <span asp-validation-for="TenSP" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="MaHang" class="form-label fw-semibold">Hãng sản xuất <span class="text-danger">*</span></label>
+        <select asp-for="MaHang" asp-items="ViewBag.MaHang" class="form-select">
+            <option value="">-- Chọn hãng --</option>
+        </select>
+        <span asp-validation-for="MaHang" class="text-danger small"></span>
+    </div>
+
+    @* Hàng 2: Màn hình | Chip *@
+    <div class="col-md-6">
+        <label asp-for="ManHinh" class="form-label fw-semibold"></label>
+        <input asp-for="ManHinh" class="form-control" placeholder="6.9&quot; Super Retina XDR" />
+        <span asp-validation-for="ManHinh" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Chip" class="form-label fw-semibold"></label>
+        <input asp-for="Chip" class="form-control" placeholder="Apple A18 Pro" />
+        <span asp-validation-for="Chip" class="text-danger small"></span>
+    </div>
+
+    @* Hàng 3: Camera | Pin *@
+    <div class="col-md-6">
+        <label asp-for="Camera" class="form-label fw-semibold"></label>
+        <input asp-for="Camera" class="form-control" placeholder="48MP + 48MP + 12MP" />
+        <span asp-validation-for="Camera" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Pin" class="form-label fw-semibold">Pin <span class="text-danger">*</span></label>
+        <input asp-for="Pin" class="form-control" placeholder="4685 mAh" />
+        <span asp-validation-for="Pin" class="text-danger small"></span>
+    </div>
+
+    @* Hàng 4: Hệ điều hành | Ảnh đại diện *@
+    <div class="col-md-6">
+        <label asp-for="HeDieuHanh" class="form-label fw-semibold"></label>
+        <input asp-for="HeDieuHanh" class="form-control" placeholder="iOS 18" />
+        <span asp-validation-for="HeDieuHanh" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <span class="form-label fw-semibold d-block mb-2">Ảnh đại diện</span>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <input type="file" name="fileAnh" id="fileAnh" class="visually-hidden" accept=".jpg,.jpeg,.jfif,.png,.webp,.gif"
+                   data-preview="#xemTruocAnh" data-file-name="#tenFileAnh" />
+            <label for="fileAnh" class="btn btn-light border px-4 mb-0">Chọn tệp...</label>
+            <span class="small text-muted">
+                <span id="tenFileAnh">@(string.IsNullOrEmpty(Model.AnhDaiDien) ? "Chưa chọn tệp" : System.IO.Path.GetFileName(Model.AnhDaiDien))</span>
+                &nbsp;(.jpg/.png/.webp ≤ @(UploadService.KichThuocToiDa / 1024 / 1024) MB)
+            </span>
+        </div>
+        <div class="anh-preview-box mt-2">
+            <img id="xemTruocAnh" src="@(Model.AnhDaiDien ?? "/images/no-phone.svg")" alt="Xem trước ảnh đại diện" />
+        </div>
+        @if (Model.MaSP > 0 && !string.IsNullOrEmpty(Model.AnhDaiDien))
+        {
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="xoaAnhDaiDien" value="true" id="xoaAnhDaiDien" />
+                <label class="form-check-label small" for="xoaAnhDaiDien">Xóa ảnh đại diện hiện tại</label>
+            </div>
+        }
+        <span class="text-danger small d-block">@Html.ValidationMessage("fileAnh")</span>
+    </div>
+
+    @* Thư viện ảnh phụ (nhiều ảnh) *@
+    <div class="col-12">
+        <label class="form-label fw-semibold" for="fileAnhPhu">Ảnh phụ – thư viện ảnh (chọn được nhiều ảnh, tối đa @QLDienThoai.Areas.Admin.Controllers.SanPhamController.SoAnhPhuToiDa ảnh)</label>
+        <input type="file" name="fileAnhPhu" id="fileAnhPhu" class="form-control" multiple accept=".jpg,.jpeg,.jfif,.png,.webp,.gif"
+               data-preview-list="#xemTruocAnhPhu" />
+        <span class="text-danger small">@Html.ValidationMessage("fileAnhPhu")</span>
+        <div id="xemTruocAnhPhu" class="d-flex flex-wrap gap-2 mt-2"></div>
+    </div>
+
+    @* Mô tả chi tiết – CKEditor 5 *@
+    <div class="col-12">
+        <label asp-for="MoTa" class="form-label fw-semibold">Mô tả chi tiết (CKEditor 5)</label>
+        <textarea asp-for="MoTa" class="form-control rich-editor" rows="10"
+                  data-upload-url="@Url.Action("UploadAnhMoTa", "SanPham", new { area = "Admin" })"></textarea>
+        <div class="form-text">Nội dung HTML được lọc bằng HtmlSanitizer trước khi lưu (chống XSS).</div>
+    </div>
+
+    @* Thông báo lỗi nhập liệu (ModelState) *@
+    <div class="col-12">
+        <div class="alert alert-danger mb-0 @(coLoiServer ? "" : "d-none")" role="alert" data-loi-nhap-lieu>
+            (!) Có lỗi nhập liệu – vui lòng kiểm tra các trường đánh dấu đỏ.
+            @if (loiChung.Any())
+            {
+                <ul class="mb-0 mt-1">
+                    @foreach (var e in loiChung) { <li>@e</li> }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+@model PagedResult<DonHang>
+@{
+    ViewData["Title"] = "Đơn hàng";
+    string? tt = ViewBag.TrangThai;
+}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0">Đơn hàng</h1>
+    <a asp-action="Create" class="btn btn-accent"><i class="bi bi-plus-lg"></i> Tạo đơn tại quầy</a>
+</div>
+
+<ul class="nav nav-pills mb-3 small flex-wrap">
+    <li class="nav-item"><a class="nav-link @(string.IsNullOrEmpty(tt) ? "active" : "")" asp-action="Index">Tất cả</a></li>
+    @foreach (var t in TrangThaiDon.TatCa)
+    {
+        <li class="nav-item"><a class="nav-link @(tt == t ? "active" : "")" asp-action="Index" asp-route-trangThai="@t">@t</a></li>
+    }
+</ul>
+
+<form method="get" class="row g-2 mb-3 align-items-end" style="max-width:900px">
+    <input type="hidden" name="trangThai" value="@tt" />
+    <div class="col-sm-4">
+        <label class="form-label small" for="q">Mã đơn / SĐT / tên khách</label>
+        <input id="q" name="q" value="@ViewBag.Q" class="form-control" />
+    </div>
+    <div class="col-sm-3">
+        <label class="form-label small" for="tuNgay">Từ ngày</label>
+        <input id="tuNgay" type="date" name="tuNgay" value="@ViewBag.TuNgay" class="form-control" />
+    </div>
+    <div class="col-sm-3">
+        <label class="form-label small" for="denNgay">Đến ngày</label>
+        <input id="denNgay" type="date" name="denNgay" value="@ViewBag.DenNgay" class="form-control" />
+    </div>
+    <div class="col-sm-2"><button class="btn btn-outline-secondary w-100" type="submit">Lọc</button></div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle table-admin">
+        <thead class="table-light"><tr><th>Mã</th><th>Khách hàng</th><th>SĐT</th><th>Ngày đặt</th><th class="text-end">Tổng tiền</th><th>Thanh toán</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
+        <tbody>
+        @foreach (var d in Model.Items)
+        {
+            <tr>
+                <td>#@d.MaDH</td>
+                <td>@d.HoTenNhan<div class="small text-muted">@d.KhachHang?.TenDangNhap</div></td>
+                <td>@d.SoDienThoaiNhan</td>
+                <td class="small">@d.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                <td class="text-end">@d.TongTien.ToString("N0")</td>
+                <td class="small">@d.PhuongThucTT @if (d.DaThanhToan) { <i class="bi bi-check-circle-fill text-success" title="Đã thanh toán"></i> }</td>
+                <td><span class="badge text-bg-@TrangThaiDon.MauBadge(d.TrangThai)">@d.TrangThai</span></td>
+                <td class="text-end text-nowrap">
+                    <a asp-action="Details" asp-route-id="@d.MaDH" class="btn btn-sm btn-outline-secondary" title="Chi tiết"><i class="bi bi-eye"></i></a>
+                    @if (d.TrangThai is not (TrangThaiDon.HoanThanh or TrangThaiDon.DaHuy))
+                    {
+                        <a asp-action="GanImei" asp-route-id="@d.MaDH" class="btn btn-sm btn-outline-success" title="Gán IMEI"><i class="bi bi-upc-scan"></i></a>
+                        <a asp-action="Edit" asp-route-id="@d.MaDH" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="bi bi-pencil"></i></a>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<partial name="_Pager" model="Model" />

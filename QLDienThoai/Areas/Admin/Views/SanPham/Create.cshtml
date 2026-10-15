@@ -1,0 +1,25 @@
+@model SanPham
+@{
+    ViewData["Title"] = "Thêm sản phẩm";
+}
+<h1 class="h3 fw-bold mb-1">Thêm sản phẩm</h1>
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb small mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Sản phẩm</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Thêm mới</li>
+    </ol>
+</nav>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="admin-form">
+    <partial name="_Form" model="Model" />
+    <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+        <button class="btn btn-success fw-semibold px-5" type="submit">Lưu</button>
+        <a asp-action="Index" class="btn btn-outline-secondary px-4">Quay lại</a>
+        <span class="small text-muted">Sau khi lưu sẽ chuyển sang bước thêm phiên bản (dung lượng, màu, giá).</span>
+    </div>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_EditorScripts" />
+}

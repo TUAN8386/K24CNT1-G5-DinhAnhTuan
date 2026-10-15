@@ -1,0 +1,45 @@
+@model TraCuuBaoHanhVM
+@{
+    ViewData["Title"] = "Tra cứu bảo hành";
+}
+<div class="mx-auto" style="max-width:720px">
+    <h1 class="h4 mb-3"><i class="bi bi-shield-check"></i> Tra cứu bảo hành theo IMEI</h1>
+    <form asp-action="Index" method="get" class="box mb-3">
+        <label asp-for="IMEI" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="IMEI" class="form-control font-monospace" maxlength="15" inputmode="numeric" placeholder="15 chữ số, bấm *#06# trên máy để xem" />
+            <button class="btn btn-accent" type="submit">Tra cứu</button>
+        </div>
+        <span asp-validation-for="IMEI" class="text-danger small"></span>
+    </form>
+
+    @if (Model.DaTraCuu)
+    {
+        if (Model.KetQua == null)
+        {
+            <div class="alert alert-warning">Không tìm thấy máy có IMEI <strong>@Model.IMEI</strong> trong hệ thống.</div>
+        }
+        else
+        {
+            var ct = Model.KetQua;
+            <div class="box">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <h2 class="h5 mb-1">@ct.PhienBan?.SanPham?.TenSP</h2>
+                        <div class="text-muted small">@ct.PhienBan?.DungLuong · @ct.PhienBan?.MauSac · IMEI <span class="font-monospace">@ct.IMEI</span></div>
+                    </div>
+                    <span class="badge fs-6 @(Model.ConBaoHanh ? "text-bg-success" : "text-bg-secondary")">@(Model.ConBaoHanh ? "Còn bảo hành" : "Hết bảo hành")</span>
+                </div>
+                <hr />
+                <div class="row small">
+                    <div class="col-sm-6"><strong>Ngày mua:</strong> @ct.DonHang?.NgayDat.ToString("dd/MM/yyyy")</div>
+                    <div class="col-sm-6"><strong>Hạn bảo hành:</strong> @Model.HanBaoHanh?.ToString("dd/MM/yyyy") (@QLDienThoai.Controllers.BaoHanhController.SoThangBaoHanh tháng)</div>
+                    <div class="col-sm-6"><strong>Mã đơn:</strong> #@ct.MaDH</div>
+                    <div class="col-sm-6"><strong>Trạng thái đơn:</strong> @ct.DonHang?.TrangThai</div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

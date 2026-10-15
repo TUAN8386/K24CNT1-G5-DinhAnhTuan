@@ -1,0 +1,21 @@
+@model SanPham
+@{
+    ViewData["Title"] = "Xóa sản phẩm";
+    bool daBan = ViewBag.DaBan == true;
+}
+<h1 class="h4 mb-3">Xóa sản phẩm: @Model.TenSP</h1>
+<div class="box" style="max-width:640px">
+    @if (daBan)
+    {
+        <div class="alert alert-warning">Sản phẩm đã phát sinh đơn hàng nên <strong>không thể xóa</strong> (giữ lịch sử bán hàng và bảo hành IMEI).</div>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    }
+    else
+    {
+        <p>Xóa sản phẩm <strong>@Model.TenSP</strong> (@Model.HangSanXuat?.TenHang) cùng <strong>@Model.PhienBans.Count</strong> phiên bản?</p>
+        <form asp-action="Delete" asp-route-id="@Model.MaSP" method="post">
+            <button class="btn btn-danger" type="submit">Xóa</button>
+            <a asp-action="Index" class="btn btn-link">Hủy</a>
+        </form>
+    }
+</div>

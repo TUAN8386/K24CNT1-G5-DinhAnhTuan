@@ -1,0 +1,21 @@
+@model HangSanXuat
+@{
+    ViewData["Title"] = "Xóa hãng";
+    var conSP = Model.SanPhams.Any();
+}
+<h1 class="h4 mb-3">Xóa hãng: @Model.TenHang</h1>
+<div class="box" style="max-width:600px">
+    @if (conSP)
+    {
+        <div class="alert alert-warning mb-3">Hãng đang có <strong>@Model.SanPhams.Count</strong> sản phẩm nên <strong>không thể xóa</strong>. Hãy chuyển hoặc xóa các sản phẩm trước.</div>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    }
+    else
+    {
+        <p>Bạn chắc chắn muốn xóa hãng <strong>@Model.TenHang</strong>?</p>
+        <form asp-action="Delete" asp-route-id="@Model.MaHang" method="post">
+            <button class="btn btn-danger" type="submit">Xóa</button>
+            <a asp-action="Index" class="btn btn-link">Hủy</a>
+        </form>
+    }
+</div>
